@@ -1,0 +1,26 @@
+@startuml
+
+title Step2: Notification Webhook Process
+
+participant "Push Notification Third Party" as pushService
+participant "Recipient" as recipient
+participant "Notification Service" as notification
+
+group Handling Notification Status via Webhook
+    pushService -> recipient: Sent Push Notification
+    pushService -> notification: Send Delivery Result via Webhook Callback
+        note right of pushService
+            Push service sends callback with 
+            (depend on third party structure):
+            - userId
+            - notificationId
+            - delivery status (DELIVERED, FAILED, etc.)
+        end note
+    notification -> pushService: Acknowledge Callback
+    notification -> notification: Update Notification Record Status
+        note right of notification
+            Update notification status from callback response
+        end note
+end
+
+@enduml

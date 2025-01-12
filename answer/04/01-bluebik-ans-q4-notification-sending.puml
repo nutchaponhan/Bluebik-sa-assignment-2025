@@ -1,0 +1,75 @@
+@startuml
+title Step1: Notification Sending Process
+
+actor Admin as admin
+participant "Scheduling Service" as scheduler
+participant "Message Broker (Kafka)" as broker
+participant "Notification Consumer" as consumer
+participant "Push Notification Third Party" as pushService
+participant "Cache" as cache
+
+
+group Publishing Notifications
+    admin -> scheduler: Configure Songkran Notification Schedule
+        note right of admin
+            Admin sets the schedule for Songkran notifications,
+            specifying the trigger time and campaign details.
+        end note
+    scheduler -> scheduler: Trigger Notification Publishing at trigger time
+    loop Batching Process for Query
+        scheduler -> scheduler: Query Users in Batches (e.g., 10,000 at a time)
+            note right of scheduler
+                Execute SQL query: SELECT * FROM Users LIMIT 10000 OFFSET <batch_round>
+                Add filtering criteria for target user.
+            end note
+        scheduler -> broker: Publish Batch of Notification Event Message
+            note right of scheduler
+                Publish to Kafka topic: notifications.events
+                Key: userId, Value: notification payload.
+            end note
+    end
+end
+
+group Consuming Notifications Parallel Processing By Consumer Groups
+    loop For Each Notification Event
+        consumer -> broker: Consume Notification Event Message
+        broker -> consumer: Notification Event Message
+            note right of broker
+                Consumer consume messages from Kafka topic: notifications.events
+                Partition-based parallel processing ensures scalability.
+            end note
+        consumer -> cache: Check for Duplicates
+        cache -> consumer: Cache result
+            note right of consumer
+                Check Redis cache for already processed notifications:
+                - Key: userId + eventTopic
+            end note
+        alt Notification Already Sent
+            consumer -> broker: Acknowledge Event
+                note right of consumer
+                    Acknowledge processing without further action
+                    if duplicate is detected.
+                end note
+        else New Notification
+            consumer -> pushService: Call Push Notification
+            pushService -> consumer: Acknowledge
+            consumer -> consumer: create notification record
+                note right of consumer
+                    New notification record initiate with PENDING status.
+                    After notification was sent to recipient then 
+                    callback with result to our webhooks.
+                end note
+            consumer -> cache: Set Cache
+            cache -> consumer: Acknowledge
+                note right of consumer
+                    Set key in Redis:
+                    - Key: userId + eventTopic
+                    - Value: notification metadata
+                    - TTL: time-to-live for deduplication.
+                end note
+            consumer -> broker: Acknowledge Event
+        end
+    end
+end
+
+@enduml

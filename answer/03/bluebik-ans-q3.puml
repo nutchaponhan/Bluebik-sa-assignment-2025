@@ -1,0 +1,150 @@
+@startuml
+
+package "User Domain" {
+    entity User {
+        * userId: int
+        ---
+        name: string
+        email: string
+        password: string
+        }
+}
+
+package "Product Domain" {
+    entity Product {
+        * productId: int
+        ---
+        name: string
+        image: string
+        price: double
+    }
+}
+
+package "Shop Domain" {
+    entity Shop {
+        * shopId: int
+        ---
+        name: string
+        location: string
+        available: boolean
+    }
+
+    entity ShopProductInventory {
+        * shopId: int <FK>
+        * productId: int <FK>
+        -- Composite Key: (shopId, productId)
+        ---
+        stock: int
+        available: boolean
+    }
+}
+
+
+package "Cart Domain" {
+    entity Cart {
+        * cartId: int
+        ---
+        userId: int <FK>
+    }
+
+    entity CartItem {
+        * cartItemId: int
+        ---
+        cartId: int <FK>
+        productId: int <FK>
+        quantity: int
+    }
+}
+
+
+package "Order Domain" {
+    entity Order {
+        * orderId: int
+        ---
+        userId: int <FK>
+        cartId: int <FK>
+        status: Enum { PENDING, CONFIRMED, 
+            CANCELLED, COMPLETED}
+        price: int
+        error: string?
+    }
+}
+
+
+package "Payment Domain" {
+    entity PaymentMethod {
+        * paymentMethodId: int
+        ---
+        method: Enum { CREDIT }
+        available: boolean
+    }
+
+    entity PaymentShopMethod {
+        * paymentMethodId: int
+        * shopId: int
+        -- Composite Key: (paymentMethodId, shopId)
+    }
+
+    entity PaymentUserMethod {
+        * paymentUserMethodId: int
+        ---
+        * paymentMethodId: int
+        * userId: int
+        accountNo: string
+    }
+
+    entity PaymentTransaction {
+        * paymentTransactionId: int
+        ---
+        * orderId: int <FK>
+        * paymentUserMethodId: int <FK>
+        referenceId: string
+        status: Enum { PENDING, CANCELLED, COMPLETED }
+        error: string?
+        createdAt: date
+        updatedAt: date
+        timestamp: date?
+    }
+}
+
+
+package "Notification Domain" {
+    entity Notification {
+        * notificationId: int
+        ---
+        userId: int
+        orderId: int
+        channel: Enum { PUSH_NOTIFICATION }
+        status: Enum { PENDING, CANCELLED, COMPLETED }
+        body: json
+        error: string?
+        createdAt: date
+        updatedAt: date
+        timestamp: date?
+    }
+}
+
+
+
+User ||--o{ Cart : "has"
+User ||--o{ Order : "places"
+User ||--o{ PaymentUserMethod : "add payment methods"
+
+Shop ||--o{ ShopProductInventory: "manages"
+Shop ||--o{ PaymentShopMethod: "supports"
+ShopProductInventory }o--||Product: "references"
+
+Cart ||--o{ CartItem : "contains"
+CartItem }o--|| Product : "references"
+
+Order ||--|| Cart : "based on"
+Order ||--|| PaymentTransaction : "initiate"
+
+PaymentMethod ||--o{ PaymentShopMethod : "references"
+PaymentMethod ||--o{ PaymentUserMethod : "references"
+PaymentTransaction }o--|| PaymentUserMethod : "uses"
+
+Notification ||--o{ User : "notifies"
+Notification }o--|| Order : "trigger"
+
+@enduml

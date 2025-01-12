@@ -1,0 +1,1396 @@
+{
+	"info": {
+		"_postman_id": "2c09d79e-df81-47be-a102-7001c3dc3c76",
+		"name": "Bluebik - CoffeeShop API Collection",
+		"description": "# 🚀 Bluebik caffe APIs\n\nThis is Bluebik caffe APIs collentions for new features, online shop and payment which including\n\n- CartService APIs\n    \n- OrderSerivce APIs\n    \n- PaymentService APIs\n    \n- Notification Apis\n    \n\ndocument by nutchapon hanouypornlert",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7913324"
+	},
+	"item": [
+		{
+			"name": "cart-service",
+			"item": [
+				{
+					"name": "cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cart_service_url}}/api/v1/cart?userId={{user_id}}",
+							"host": [
+								"{{cart_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "{{user_id}}",
+									"description": "current user id"
+								}
+							]
+						},
+						"description": "**Purpose:**  \nFetch the current state of the user's cart, including all items, their details, and the total price.\n\n**How to use:**\n\n- Use `userId` to filter items to current user.\n    \n- Developers should call this API to render the cart page or confirm cart details before proceeding to checkout."
+					},
+					"response": [
+						{
+							"name": "success (200)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/cart_service/api/v1/cart?userId=1",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"cart_service",
+										"api",
+										"v1",
+										"cart"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "1",
+											"description": "current user id"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"cartId\": 1,\n    \"userId\": 1,\n    \"items\": [\n        {\n            \"productId\": 456,\n            \"name\": \"Chocolate\",\n            \"image\": \"https://example.com/chocolate.jpg\",\n            \"quantity\": 2,\n            \"price\": 100.0\n        },\n        {\n            \"productId\": 789,\n            \"name\": \"Coffee\",\n            \"image\": \"https://example.com/coffee.jpg\",\n            \"quantity\": 1,\n            \"price\": 50.0\n        }\n    ],\n    \"total\": 250.0\n}"
+						},
+						{
+							"name": "error (404)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/cart_service/api/v1/cart?userId=1",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"cart_service",
+										"api",
+										"v1",
+										"cart"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "1",
+											"description": "current user id"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"cart not found.\",\n    \"statusCode\": 404\n}"
+						}
+					]
+				},
+				{
+					"name": "cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful PUT request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"cartId\": 1,\n    \"userId\": 1,\n    \"items\": [\n        {\n            \"productId\": 456,\n            \"quantity\": 2\n        }\n    ]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{cart_service_url}}/api/v1/cart",
+							"host": [
+								"{{cart_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart"
+							]
+						},
+						"description": "**Purpose:**  \nAdd, update, or remove items in the user's cart. A single endpoint simplifies cart management, with item quantities managed on the frontend.\n\n**How to use:**\n\n- FE need to manage cart state depend on user adjust items quantity and send final cart state to BE to update final state\n    \n- If item was set `quantity` to `0`. FE no need to send this item back, BE will remove conflic item state depend on FE data as latest information"
+					},
+					"response": [
+						{
+							"name": "success (201)",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"cartId\": 1,\n    \"userId\": 1,\n    \"items\": [\n        {\n            \"productId\": 456,\n            \"quantity\": 2\n        }\n    ]\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/cart_service/api/v1/cart",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"cart_service",
+										"api",
+										"v1",
+										"cart"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"cartId\": 1,\n    \"userId\": 1,\n    \"items\": [\n        {\n            \"productId\": 456,\n            \"name\": \"Chocolate\",\n            \"image\": \"https://example.com/chocolate.jpg\",\n            \"quantity\": 2,\n            \"price\": 100\n        }\n    ],\n    \"total\": 200\n}"
+						},
+						{
+							"name": "error (404)",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"cartId\": 1,\n    \"userId\": 1,\n    \"items\": [\n        {\n            \"productId\": 456,\n            \"quantity\": 2\n        }\n    ]\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/cart_service/api/v1/cart",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"cart_service",
+										"api",
+										"v1",
+										"cart"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"cart not found.\",\n    \"statusCode\": 404\n}"
+						}
+					]
+				}
+			],
+			"description": "This cart service will manage user selected/de-selected products and add to cart and then place a order"
+		},
+		{
+			"name": "order-service",
+			"item": [
+				{
+					"name": "orders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_service_url}}/api/v1/orders",
+							"host": [
+								"{{order_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders"
+							]
+						},
+						"description": "**Purpose:**\n\nInitiate a new order from the cart, setting its initial status to `PENDING`.\n\n**How to use**\n\n- Call this API after the cart is confirmed at checkout.\n    \n- Pass the `cartId` and the total `price` for the order."
+					},
+					"response": [
+						{
+							"name": "success (201)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"cartId\": 1,\n    \"userId\":1,\n    \"price\": 200.0\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/order_service_url/api/v1/orders",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"order_service_url",
+										"api",
+										"v1",
+										"orders"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"orderId\": 1001,\n    \"userId\": 1,\n    \"cartId\": 1,\n    \"status\": \"PENDING\",\n    \"price\": 200\n}"
+						},
+						{
+							"name": "error (400)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"cartId\": 1,\n    \"userId\":1,\n    \"price\": 200.0\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{order_service_url}}/api/v1/orders",
+									"host": [
+										"{{order_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"orders"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid cart ID or missing data.\",\n    \"statusCode\": 400\n}"
+						}
+					]
+				},
+				{
+					"name": "payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paymentUserMethodId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{order_service_url}}/api/v1/orders/{{order_id}}/payment",
+							"host": [
+								"{{order_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders",
+								"{{order_id}}",
+								"payment"
+							]
+						},
+						"description": "**Purpose:**\n\nInitiate a payment transaction for an order.\n\n**How to use:**\n\n- Pass the `paymentUserMethodId` representing the selected payment method.\n    \n- Use this after confirm payment method"
+					},
+					"response": [
+						{
+							"name": "success (201)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"paymentUserMethodId\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/order_service_url/api/v1/orders/10/payment",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"order_service_url",
+										"api",
+										"v1",
+										"orders",
+										"10",
+										"payment"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"transactionId\": 10001,\n    \"orderId\": 1234,\n    \"paymentMethodId\": 1,\n    \"status\": \"PENDING\",\n    \"createdAt\": \"2025-01-12T12:34:56Z\"\n}"
+						},
+						{
+							"name": "error (400)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"paymentUserMethodId\": 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{order_service_url}}/api/v1/orders/{{order_id}}/payment",
+									"host": [
+										"{{order_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"orders",
+										"{{order_id}}",
+										"payment"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid payment method or order ID.\",\n    \"statusCode\": 400\n}"
+						}
+					]
+				}
+			],
+			"description": "This order service will manage order lifecycle start from creation, making a payment unti order finish."
+		},
+		{
+			"name": "payment-service",
+			"item": [
+				{
+					"name": "payment-method",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{payment_service_url}}/api/v1/payment/methods?user_id={{user_id}}&shop_id={{shop_id}}",
+							"host": [
+								"{{payment_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"methods"
+							],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "{{user_id}}",
+									"description": "current user id"
+								},
+								{
+									"key": "shop_id",
+									"value": "{{shop_id}}",
+									"description": "selected shop id"
+								}
+							]
+						},
+						"description": "**Purpose:**\n\nRetrieve the payment methods available for a specific shop and user.\n\n**How to use:**\n\n- Use this API when displaying payment options for current user on payment selection step."
+					},
+					"response": [
+						{
+							"name": "success (200)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/payment_service_url/api/v1/payment/user?user_id=1&shop_id=1",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"payment_service_url",
+										"api",
+										"v1",
+										"payment",
+										"user"
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "1",
+											"description": "current user id"
+										},
+										{
+											"key": "shop_id",
+											"value": "1",
+											"description": "selected shop id"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"shopId\": 1,\n    \"paymentUserMethods\": [\n        {\n            \"paymentUserMethodId\": 1,\n            \"method\": \"CREDIT\",\n            \"account\": \"011-011-12345\",\n            \"available\": true\n        },\n        {\n            \"paymentUserMethodId\": 2,\n            \"method\": \"CREDIT\",\n            \"account\": \"022-022-12345\",\n            \"available\": true\n        }\n    ]\n}\n"
+						},
+						{
+							"name": "error (400)",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payment/user?user_id={{user_id}}&shop_id={{shop_id}}",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payment",
+										"user"
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "{{user_id}}",
+											"description": "current user id"
+										},
+										{
+											"key": "shop_id",
+											"value": "{{shop_id}}",
+											"description": "selected shop id"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid shop id. or user id\",\n    \"statusCode\": 400\n}"
+						}
+					]
+				},
+				{
+					"name": "validate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paymentUserMethodId\": 1,\n    \"shopId\": 1,\n    \"amount\": 250.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payment_service_url}}/api/v1/payment/validate",
+							"host": [
+								"{{payment_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"validate"
+							]
+						},
+						"description": "**Purpose:**\n\nValidate the selected payment method before initiating a transaction.\n\n**How to use:**\n\nPass the `paymentUserMethodId`, `shopId`, and transaction `amount` to ensure validity."
+					},
+					"response": [
+						{
+							"name": "success (200)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"paymentUserMethodId\": 1,\n    \"shopId\": 1,\n    \"amount\": 250.0\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/payment_service_url/api/v1/payment/validate",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"payment_service_url",
+										"api",
+										"v1",
+										"payment",
+										"validate"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"isValid\": true,\n    \"message\": \"Payment method is valid and available.\",\n    \"error\": null\n}\n"
+						},
+						{
+							"name": "error (400)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"paymentUserMethodId\": 1,\n    \"shopId\": 1,\n    \"amount\": 250.0\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payment/validate",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payment",
+										"validate"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"isValid\": false,\n    \"message\": \"Invalid payment or shop.\",\n    \"statusCode\": 400\n}\n"
+						}
+					]
+				},
+				{
+					"name": "transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\": 1,\n    \"paymentUserMethodId\": 1,\n    \"amount\": 250.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payment_service_url}}/api/v1/payment/transactions",
+							"host": [
+								"{{payment_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"transactions"
+							]
+						},
+						"description": "**Purpose:**\n\nStart a financial transaction for a payment.\n\n**How to use:**\n\n- Use this API after the payment method pass validate to initiate financial transaction process."
+					},
+					"response": [
+						{
+							"name": "success (201)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"orderId\": 1,\n    \"paymentUserMethodId\": 1,\n    \"amount\": 250.0\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/payment_service_url/api/v1/payment/transactions",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"payment_service_url",
+										"api",
+										"v1",
+										"payment",
+										"transactions"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"transactionId\": 2001,\n    \"orderId\": 1234,\n    \"paymentUserMethodId\": 1,\n    \"referenceId\": \"transaction-ref-id-1\",\n    \"amount\": 250,\n    \"status\": \"PENDING\",\n    \"createdAt\": \"2025-01-12T12:34:56Z\"\n}"
+						},
+						{
+							"name": "error (400)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"orderId\": 1,\n    \"paymentUserMethodId\": 1,\n    \"amount\": 250.0\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payment/transactions",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payment",
+										"transactions"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Invalid payment method or order ID.\",\n    \"statusCode\": 400\n}"
+						}
+					]
+				},
+				{
+					"name": "status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transactionId\": 1001,\n    \"status\": \"COMPLETED\",\n    \"timestamp\": \"2025-01-12T12:45:00Z\",\n    \"referenceId\": \"transaction-ref-id-1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payment_service_url}}/api/v1/payment/transactions/status",
+							"host": [
+								"{{payment_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"transactions",
+								"status"
+							]
+						},
+						"description": "**Purpose:**\n\nUpdate the transaction status (e.g., `COMPLETED`, `CANCELED`) via third-party callbacks\n\n**How to use:**\n\n- This API is called by payment gateways or third party we used for transaction proceed."
+					},
+					"response": [
+						{
+							"name": "transaction-complete (201)",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"transactionId\": 1001,\n    \"referenceId\": \"transaction-ref-id-1\",\n    \"status\": \"COMPLETED\",\n    \"timestamp\": \"2025-01-12T12:45:00Z\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/payment_service_url/api/v1/payment/transactions/status",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"payment_service_url",
+										"api",
+										"v1",
+										"payment",
+										"transactions",
+										"status"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"transactionId\": 1001,\n    \"orderId\": 1234,\n    \"paymentUserMethodId\": 1,\n    \"amount\": 250,\n    \"status\": \"COMPLETED\",\n    \"timestamp\": \"2025-01-12T12:45:00Z\"\n}"
+						},
+						{
+							"name": "transaction-cancel (201)",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"transactionId\": 1001,\n    \"referenceId\": \"transaction-ref-id-1\",\n    \"status\": \"CANCEL\",\n    \"error\": \"insufficient account available in creadit card, please try again\",\n    \"timestamp\": \"2025-01-12T12:45:00Z\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payment/transactions/status",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payment",
+										"transactions",
+										"status"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"transactionId\": 1001,\n    \"orderId\": 1234,\n    \"paymentUserMethodId\": 1,\n    \"amount\": 250,\n    \"status\": \"COMPLETED\",\n    \"error\": \"insuffician available in creadit card, please try again\",\n    \"timestamp\": \"2025-01-12T12:45:00Z\"\n}"
+						}
+					]
+				}
+			],
+			"description": "This payment service will manage transaction process with/without third party.\n\nresponsibilities\n\nnotionvc: 6b132ca3-c839-4b99-9ba8-f00665ab7943"
+		},
+		{
+			"name": "notification-service",
+			"item": [
+				{
+					"name": "notification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"orderId\": 10,\n    \"channel\": \"PUSH_NOTIFICATION\",\n    \"body\": {\n        \"title\": \"Cafe Bluebik\",\n        \"message\": \"Payment complted. You coffee is brewing\",\n        \"context\": {\n            \"orderId\": 10,\n            \"status\": \"CONFIRM\"\n        }\n    }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{notification_service_url}}/api/v1/notifications",
+							"host": [
+								"{{notification_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notifications"
+							]
+						},
+						"description": "**Purpose:**\n\nSend a push notification to the user about an order-related event.\n\n**How to use:**\n\n- Trigger this after order was update to comfirm status by sending correct message structure depend on method we use."
+					},
+					"response": [
+						{
+							"name": "send-pending",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\": 1,\n    \"orderId\": 10,\n    \"channel\": \"PUSH_NOTIFICATION\",\n    \"body\": {\n        \"title\": \"Cafe Bluebik\",\n        \"message\": \"Payment complted. You coffee is brewing\",\n        \"context\": {\n            \"orderId\": 10,\n            \"status\": \"CONFIRM\"\n        }\n    }\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/notification_service_url/api/v1/notifications",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"notification_service_url",
+										"api",
+										"v1",
+										"notifications"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"notificationId\": 30001,\n    \"userId\": 1,\n    \"orderId\": 10,\n    \"status\": \"PENDING\",\n    \"channel\": \"PUSH_NOTIFICATION\",\n    \"createdAt\": \"2025-01-12T13:00:00Z\"\n}\n"
+						}
+					]
+				},
+				{
+					"name": "status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"notificationId\": 2001,\n    \"status\": \"COMPLETED\",\n    \"timestamp\": \"2025-01-12T13:10:00Z\",\n    \"error\": null\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{notification_service_url}}/api/v1/notifications/status",
+							"host": [
+								"{{notification_service_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notifications",
+								"status"
+							]
+						},
+						"description": "**Purpose:**\n\nUpdate the notification status (e.g., `COMPLETED`, `CANCELED`) via third-party callbacks\n\n**How to use:**\n\n- This API is called by third party we used for sending notfication proceed."
+					},
+					"response": [
+						{
+							"name": "send-complete (201)",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"notificationId\": 2001,\n    \"status\": \"COMPLETED\",\n    \"timestamp\": \"2025-01-12T13:10:00Z\",\n    \"error\": null\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.mock-bluebik.com/api/notification_service_url/api/v1/notifications/status",
+									"protocol": "https",
+									"host": [
+										"api",
+										"mock-bluebik",
+										"com"
+									],
+									"path": [
+										"api",
+										"notification_service_url",
+										"api",
+										"v1",
+										"notifications",
+										"status"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"notificationId\": 2001,\n    \"orderId\": 10,\n    \"status\": \"COMPLETED\",\n    \"timestamp\": \"2025-01-12T13:10:00Z\"\n}\n"
+						},
+						{
+							"name": "send-cancel (201)",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"notificationId\": 2001,\n    \"status\": \"CANCELLED\",\n    \"timestamp\": \"2025-01-12T13:10:00Z\",\n    \"error\": \"service can't sending notification, please try again\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{notification_service_url}}/api/v1/notifications/status",
+									"host": [
+										"{{notification_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"notifications",
+										"status"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"notificationId\": 2001,\n    \"orderId\": 10,\n    \"status\": \"CANCELLED\",\n    \"timestamp\": \"2025-01-12T13:10:00Z\",\n    \"error\": \"service can't sending notification, please try again\"\n}\n"
+						}
+					]
+				}
+			],
+			"description": "This notification service will send notification to user base on which event in this case is payment."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "cart_service_url",
+			"value": "https://api.mock-bluebik.com/api/cart_service"
+		},
+		{
+			"key": "order_service_url",
+			"value": "https://api.mock-bluebik.com/api/order_service_url",
+			"type": "string"
+		},
+		{
+			"key": "payment_service_url",
+			"value": "https://api.mock-bluebik.com/api/payment_service_url",
+			"type": "string"
+		},
+		{
+			"key": "notification_service_url",
+			"value": "https://api.mock-bluebik.com/api/notification_service_url",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "order_id",
+			"value": "10",
+			"type": "string"
+		},
+		{
+			"key": "shop_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "transaction_id",
+			"value": "1001",
+			"type": "string"
+		}
+	]
+}
