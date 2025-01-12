@@ -2,7 +2,7 @@
 
 package "User Domain" {
     entity User {
-        * userId: int
+        * userId: number <PK>
         ---
         name: string
         email: string
@@ -12,7 +12,7 @@ package "User Domain" {
 
 package "Product Domain" {
     entity Product {
-        * productId: int
+        * productId: number <PK>
         ---
         name: string
         image: string
@@ -22,7 +22,7 @@ package "Product Domain" {
 
 package "Shop Domain" {
     entity Shop {
-        * shopId: int
+        * shopId: number <PK>
         ---
         name: string
         location: string
@@ -30,11 +30,11 @@ package "Shop Domain" {
     }
 
     entity ShopProductInventory {
-        * shopId: int <FK>
-        * productId: int <FK>
+        * shopId: number <FK>
+        * productId: number <FK>
         -- Composite Key: (shopId, productId)
         ---
-        stock: int
+        stock: number
         available: boolean
     }
 }
@@ -42,30 +42,30 @@ package "Shop Domain" {
 
 package "Cart Domain" {
     entity Cart {
-        * cartId: int
+        * cartId: number <PK>
         ---
-        userId: int <FK>
+        userId: number <FK>
     }
 
     entity CartItem {
-        * cartItemId: int
+        * cartItemId: number <PK>
         ---
-        cartId: int <FK>
-        productId: int <FK>
-        quantity: int
+        cartId: number <FK>
+        productId: number <FK>
+        quantity: number
     }
 }
 
 
 package "Order Domain" {
     entity Order {
-        * orderId: int
+        * orderId: number <PK>
         ---
-        userId: int <FK>
-        cartId: int <FK>
+        userId: number <FK>
+        cartId: number <FK>
         status: Enum { PENDING, CONFIRMED, 
             CANCELLED, COMPLETED}
-        price: int
+        price: number
         error: string?
     }
 }
@@ -73,31 +73,32 @@ package "Order Domain" {
 
 package "Payment Domain" {
     entity PaymentMethod {
-        * paymentMethodId: int
+        * paymentMethodId: number <PK>
         ---
         method: Enum { CREDIT }
         available: boolean
     }
 
     entity PaymentShopMethod {
-        * paymentMethodId: int
-        * shopId: int
+        * paymentMethodId: number <FK>
+        * shopId: number <FK>
         -- Composite Key: (paymentMethodId, shopId)
+        ---
     }
 
     entity PaymentUserMethod {
-        * paymentUserMethodId: int
+        * paymentUserMethodId: number <PK>
         ---
-        * paymentMethodId: int
-        * userId: int
+        * paymentMethodId: number
+        * userId: number
         accountNo: string
     }
 
     entity PaymentTransaction {
-        * paymentTransactionId: int
+        * paymentTransactionId: number <PK>
         ---
-        * orderId: int <FK>
-        * paymentUserMethodId: int <FK>
+        * orderId: number <FK>
+        * paymentUserMethodId: number <FK>
         referenceId: string
         status: Enum { PENDING, CANCELLED, COMPLETED }
         error: string?
@@ -110,10 +111,10 @@ package "Payment Domain" {
 
 package "Notification Domain" {
     entity Notification {
-        * notificationId: int
+        * notificationId: number <PK>
         ---
-        userId: int
-        orderId: int
+        userId: number
+        orderId: number
         channel: Enum { PUSH_NOTIFICATION }
         status: Enum { PENDING, CANCELLED, COMPLETED }
         body: json
